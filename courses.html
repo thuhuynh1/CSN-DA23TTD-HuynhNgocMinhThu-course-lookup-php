@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khóa học - Trung tâm ABC</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Reset và Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f7fafc;
+        }
+
+        /* Main Layout */
+        .courses-page {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+        
+        /* Header Section với Gradient Hiện Đại */
+        .courses-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .courses-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .courses-header .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .courses-header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .courses-header p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* Filters Section */
+        .courses-filters {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .filters-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Content Section */
+        .courses-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 20px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Course Card Design */
+        .course-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #f1f5f9;
+            position: relative;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-card:hover::before {
+            opacity: 1;
+        }
+
+        .course-card-header {
+            padding: 2rem 2rem 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        }
+
+        .course-category {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .course-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .course-description {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .course-card-body {
+            padding: 0 2rem 2rem;
+        }
+
+        .course-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .meta-item i {
+            color: #667eea;
+            width: 16px;
+        }
+
+        .course-price {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .enroll-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .enroll-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .enroll-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .enroll-btn.secondary {
+            background: #f8fafc;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .enroll-btn.secondary:hover {
+            background: #059669;
+            color: white;
+            border-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e0;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .courses-header {
+                padding: 3rem 0;
+            }
+
+            .courses-content {
+                padding: 2rem 15px;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .course-card-header,
+            .course-card-body {
+                padding: 1.5rem;
+            }
+
+            .course-actions {
+                flex-direction: column;
+            }
+
+            .enroll-btn {
+                min-width: auto;
+            }
+
+            .filters-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .filter-group {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .course-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Animation cho course cards */
+        .course-card {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .course-card:nth-child(1) { animation-delay: 0.1s; }
+        .course-card:nth-child(2) { animation-delay: 0.2s; }
+        .course-card:nth-child(3) { animation-delay: 0.3s; }
+        .course-card:nth-child(4) { animation-delay: 0.4s; }
+        .course-card:nth-child(5) { animation-delay: 0.5s; }
+        .course-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <a href="index.html"><h2>Trung tâm Ngoại ngữ - Tin học HNMT</h2></a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="courses.html" class="active">Khóa học</a></li>
+                    <li><a href="announcements.html">Thông báo</a></li>
+                    <li><a href="contact.html">Liên hệ</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="simple_login.html" class="btn-login">Đăng nhập</a>
+                    <a href="simple_register.html" class="btn-register">Đăng ký</a>
+                    <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                        <i class="fas fa-user-shield"></i>
+                    </a>
+                </div>
+                <div class="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="courses-page">
+        <!-- Courses Header -->
+        <section class="courses-header">
+            <div class="container">
+                <h1>Khóa học của chúng tôi</h1>
+                <p>Khám phá các khóa học chất lượng cao trong lĩnh vực ngoại ngữ và tin học với đội ngũ giảng viên chuyên nghiệp</p>
+            </div>
+        </section>
+
+        <!-- Courses Filters -->
+        <section class="courses-filters">
+            <div class="filters-container">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-category="all">
+                        <i class="fas fa-th"></i> Tất cả
+                    </button>
+                    <button class="filter-btn" data-category="language">
+                        <i class="fas fa-language"></i> Ngoại ngữ
+                    </button>
+                    <button class="filter-btn" data-category="it">
+                        <i class="fas fa-laptop-code"></i> Tin học
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses Content -->
+        <section class="courses-content">
+            <div id="coursesContainer">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Đang tải khóa học...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Trung tâm Ngoại ngữ - Tin học HNMT</h3>
+                    <p>Đào tạo chất lượng cao trong lĩnh vực ngoại ngữ và tin học</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Khóa học</h4>
+                    <ul>
+                        <li><a href="#">Tiếng Anh</a></li>
+                        <li><a href="#">IELTS/TOEIC</a></li>
+                        <li><a href="#">Lập trình</a></li>
+                        <li><a href="#">Tin học văn phòng</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Trung tâm Ngoại ngữ - Tin học HNMT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Kiểm tra trạng thái đăng nhập khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking login status...');
+            checkLoginStatus();
+            loadCourses();
+        });
+
+        function checkLoginStatus() {
+            console.log('Checking login status...');
+            fetch('dp/simple_check.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Login data:', data);
+                    const authButtons = document.getElementById('authButtons');
+                    
+                    if (!authButtons) {
+                        console.error('authButtons element not found');
+                        return;
+                    }
+                    
+                    if (data && data.logged_in) {
+                        // Hiển thị thông tin người dùng đã đăng nhập
+                        authButtons.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="color: #2563eb; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-user-circle"></i> Xin chào, ${data.user_name || 'User'}!
+                                </span>
+                                <a href="my-courses.html" class="btn-login" style="background: #059669; font-size: 0.85rem; padding: 6px 12px;">
+                                    <i class="fas fa-book"></i> Khóa học của tôi
+                                </a>
+                                <a href="dp/logout.php" class="btn-register" style="background: #dc2626; font-size: 0.85rem; padding: 6px 12px;">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                                <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-user-shield"></i>
+                                </a>
+                            </div>
+                        `;
+                        console.log('Updated auth buttons for logged in user');
+                    } else {
+                        // Hiển thị nút đăng nhập/đăng ký
+                        authButtons.innerHTML = `
+                            <a href="simple_login.html" class="btn-login">Đăng nhập</a>
+                            <a href="simple_register.html" class="btn-register">Đăng ký</a>
+                            <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                                <i class="fas fa-user-shield"></i>
+                            </a>
+                        `;
+                        console.log('Updated auth buttons for guest user');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    // Hiển thị nút mặc định khi có lỗi
+                    const authButtons = document.getElementById('authButtons');
+                    if (authButtons) {
+                        authButtons.innerHTML = `
+                            <a href="simple_login.html" class="btn-login">Đăng nhập</a>
+                            <a href="simple_register.html" class="btn-register">Đăng ký</a>
+                            <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                                <i class="fas fa-user-shield"></i>
+                            </a>
+                        `;
+                    }
+                });
+        }
+
+        function loadCourses() {
+            console.log('Loading courses...');
+            fetch('dp/get_courses.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Courses data:', data);
+                    const container = document.getElementById('coursesContainer');
+                    
+                    if (!container) {
+                        console.error('coursesContainer element not found');
+                        return;
+                    }
+                    
+                    if (data && data.success && data.courses) {
+                        // Lưu dữ liệu courses vào biến global để enrollCourse có thể truy cập
+                        window.coursesData = data.courses;
+                        displayCourses(data.courses);
+                    } else {
+                        container.innerHTML = '<p>Không thể tải khóa học.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading courses:', error);
+                    const container = document.getElementById('coursesContainer');
+                    if (container) {
+                        container.innerHTML = '<p>Lỗi khi tải khóa học. Vui lòng thử lại sau.</p>';
+                    }
+                });
+        }
+
+        function displayCourses(courses) {
+            const container = document.getElementById('coursesContainer');
+            
+            if (!container) {
+                console.error('coursesContainer element not found');
+                return;
+            }
+            
+            if (!courses || !Array.isArray(courses) || courses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Chưa có khóa học nào</h3>
+                        <p>Hiện tại chưa có khóa học nào được công bố. Vui lòng quay lại sau!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="courses-grid">';
+            courses.forEach((course, index) => {
+                if (!course) return;
+                
+                const title = course.title || 'Khóa học';
+                const description = course.description || 'Không có mô tả';
+                const price = course.price ? new Intl.NumberFormat('vi-VN').format(course.price) : '0';
+                const duration = course.duration || 'N/A';
+                const level = course.level || 'Cơ bản';
+                const schedule = course.schedule || 'Sẽ thông báo';
+                const category = course.category || 'general';
+                const courseId = course.id || 0;
+                
+                // Xác định category display name và icon
+                let categoryDisplay = '';
+                let categoryIcon = '';
+                switch(category) {
+                    case 'language':
+                        categoryDisplay = 'Ngoại ngữ';
+                        categoryIcon = 'fas fa-language';
+                        break;
+                    case 'it':
+                        categoryDisplay = 'Tin học';
+                        categoryIcon = 'fas fa-laptop-code';
+                        break;
+                    default:
+                        categoryDisplay = 'Khóa học';
+                        categoryIcon = 'fas fa-book';
+                }
+                
+                html += `
+                    <div class="course-card" data-category="${category}" style="animation-delay: ${index * 0.1}s">
+                        <div class="course-card-header">
+                            <span class="course-category">
+                                <i class="${categoryIcon}"></i> ${categoryDisplay}
+                            </span>
+                            <h3 class="course-title">${title}</h3>
+                            <p class="course-description">${description}</p>
+                        </div>
+                        <div class="course-card-body">
+                            <div class="course-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span><strong>Thời lượng:</strong> ${duration} tháng</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-signal"></i>
+                                    <span><strong>Cấp độ:</strong> ${level}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span><strong>Lịch học:</strong> ${schedule}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <span><strong>Học phí:</strong> ${price}đ/tháng</span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#" class="enroll-btn primary" onclick="enrollCourse(${courseId}, event)">
+                                    <i class="fas fa-user-plus"></i>
+                                    Đăng ký ngay
+                                </a>
+                                <a href="contact.html" class="enroll-btn secondary">
+                                    <i class="fas fa-phone"></i>
+                                    Liên hệ tư vấn
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+            
+            // Thêm event listeners cho filter buttons
+            addFilterListeners();
+        }
+
+        function addFilterListeners() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const courseCards = document.querySelectorAll('.course-card');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    const category = btn.dataset.category;
+                    
+                    courseCards.forEach(card => {
+                        if (category === 'all' || card.dataset.category === category) {
+                            card.style.display = 'block';
+                            card.style.animation = 'fadeInUp 0.6s ease forwards';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        function enrollCourse(courseId, event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            console.log('Enrolling in course:', courseId);
+            
+            // Lấy thông tin khóa học từ window.coursesData
+            const coursesData = window.coursesData || [];
+            const courseFromDB = coursesData.find(c => c.id == courseId);
+            
+            if (!courseFromDB) {
+                alert('Không tìm thấy thông tin khóa học');
+                return;
+            }
+            
+            const courseData = {
+                course_id: courseId,
+                course_title: courseFromDB.title,
+                course_description: courseFromDB.description,
+                course_price: courseFromDB.price,
+                course_duration: courseFromDB.duration,
+                course_level: courseFromDB.level,
+                course_schedule: courseFromDB.schedule,
+                course_features: courseFromDB.features || []
+            };
+            
+            console.log('Course data with features:', courseData);
+            
+            // Kiểm tra đăng nhập trước
+            fetch('dp/simple_check.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data || !data.logged_in) {
+                        alert('Vui lòng đăng nhập để đăng ký khóa học!');
+                        window.location.href = 'simple_login.html';
+                        return;
+                    }
+                    
+                    console.log('Course data:', courseData);
+                    
+                    // Gửi yêu cầu đăng ký khóa học
+                    return fetch('dp/enroll_course.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(courseData)
+                    });
+                })
+                .then(response => {
+                    if (!response) return;
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (!result) return;
+                    
+                    if (result.success) {
+                        alert('✅ ' + result.message);
+                        window.location.href = 'my-courses.html';
+                    } else {
+                        // Hiển thị thông báo lỗi chi tiết
+                        alert('❌ ' + result.message);
+                        console.error('Enrollment error:', result);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error enrolling course:', error);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                });
+        }
+    </script>
+</body>
+</html>

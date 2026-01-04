@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enrollment Status Update</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .btn-primary { background-color: #007bff; color: white; border: none; }
+        .btn-success { background-color: #28a745; color: white; border: none; }
+        .btn-warning { background-color: #ffc107; color: black; border: none; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        select { padding: 5px; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Enrollment Status Update</h1>
+        
+        <div class="section info">
+            <h3>Hướng dẫn test:</h3>
+            <ol>
+                <li>Nhấn "Load Enrollments" để tải danh sách đăng ký</li>
+                <li>Thay đổi trạng thái trong dropdown</li>
+                <li>Kiểm tra console để xem debug info</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h3>Actions</h3>
+            <button class="btn-primary" onclick="loadEnrollments()">Load Enrollments</button>
+            <button class="btn-success" onclick="testUpdate()">Test Update</button>
+            <button class="btn-warning" onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div class="section">
+            <h3>Enrollments</h3>
+            <div id="enrollmentsContainer">
+                <p>Nhấn "Load Enrollments" để tải dữ liệu...</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Debug Results</h3>
+            <pre id="debugResults">Chưa có kết quả...</pre>
+        </div>
+    </div>
+
+    <script>
+        function log(message, data = null) {
+            console.log(message, data);
+            const debugResults = document.getElementById('debugResults');
+            const timestamp = new Date().toLocaleTimeString();
+            debugResults.textContent += `[${timestamp}] ${message}\n`;
+            if (data) {
+                debugResults.textContent += JSON.stringify(data, null, 2) + '\n';
+            }
+            debugResults.textContent += '\n';
+        }
+
+        function clearResults() {
+            document.getElementById('debugResults').textContent = 'Cleared...\n';
+        }
+
+        function loadEnrollments() {
+            log('Loading enrollments...');
+            
+            fetch('dp/admin_enrollments_test.php')
+                .then(response => {
+                    log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    log('Enrollments loaded:', data);
+                    displayEnrollments(data.enrollments || []);
+                })
+                .catch(error => {
+                    log('Error loading enrollments:', error);
+                });
+        }
+
+        function displayEnrollments(enrollments) {
+            const container = document.getElementById('enrollmentsContainer');
+            
+            if (!enrollments || enrollments.length === 0) {
+                container.innerHTML = '<p>Không có đăng ký nào</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>ID</th><th>Học viên</th><th>Khóa học</th><th>Trạng thái</th><th>Action</th></tr></thead><tbody>';
+            
+            enrollments.forEach(enrollment => {
+                html += `
+                    <tr>
+                        <td>${enrollment.id}</td>
+                        <td>${enrollment.user_name}</td>
+                        <td>${enrollment.course_title}</td>
+                        <td>
+                            <select onchange="updateStatus(${enrollment.id}, this.value)">
+                                <option value="pending" ${enrollment.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
+                                <option value="approved" ${enrollment.status === 'approved' ? 'selected' : ''}>Đã duyệt</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button onclick="testUpdateSpecific(${enrollment.id}, 'approved')">Test Update</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function updateStatus(enrollmentId, newStatus) {
+            log(`Updating enrollment ${enrollmentId} to ${newStatus}`);
+            
+            fetch('dp/admin_enrollments_test.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    enrollment_id: enrollmentId,
+                    status: newStatus
+                })
+            })
+            .then(response => {
+                log('Update response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                log('Update result:', data);
+                if (data.success) {
+                    alert('✅ Cập nhật thành công!');
+                    loadEnrollments(); // Reload
+                } else {
+                    alert('❌ Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                log('Update error:', error);
+                alert('❌ Có lỗi xảy ra: ' + error.message);
+            });
+        }
+
+        function testUpdateSpecific(enrollmentId, status) {
+            updateStatus(enrollmentId, status);
+        }
+
+        function testUpdate() {
+            log('Testing update with sample data...');
+            
+            const testData = {
+                enrollment_id: 1,
+                status: 'approved'
+            };
+            
+            fetch('dp/admin_enrollments_test.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(testData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                log('Test update result:', data);
+            })
+            .catch(error => {
+                log('Test update error:', error);
+            });
+        }
+
+        // Auto load on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded, auto-loading enrollments...');
+            loadEnrollments();
+        });
+    </script>
+</body>
+</html>

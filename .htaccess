@@ -1,0 +1,21 @@
+# Đảm bảo PHP được xử lý đúng
+AddType application/x-httpd-php .php
+
+# Bật rewrite engine
+RewriteEngine On
+
+# Chuyển hướng từ HTTP sang HTTPS (tùy chọn)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Bảo mật - ẩn các file config
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Bảo mật - ẩn file .htaccess
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>

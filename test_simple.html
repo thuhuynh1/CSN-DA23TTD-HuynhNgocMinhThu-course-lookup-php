@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple Enrollment Update</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        select { padding: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Enrollment Status Update</h1>
+    
+    <button onclick="loadData()">Load Enrollments</button>
+    <button onclick="testUpdate()">Test Update First Item</button>
+    
+    <div id="status"></div>
+    <div id="data"></div>
+
+    <script>
+        function log(message, isError = false) {
+            const statusDiv = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            statusDiv.innerHTML += `<p class="${isError ? 'error' : 'success'}">[${timestamp}] ${message}</p>`;
+            console.log(message);
+        }
+
+        function loadData() {
+            log('Loading enrollments...');
+            
+            fetch('dp/admin_enrollments_no_auth.php')
+                .then(response => {
+                    log(`Response status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    log(`Data loaded: ${JSON.stringify(data)}`);
+                    
+                    if (data.success) {
+                        displayData(data.enrollments);
+                        window.enrollments = data.enrollments; // Store for testing
+                    } else {
+                        log(`Error: ${data.message}`, true);
+                    }
+                })
+                .catch(error => {
+                    log(`Fetch error: ${error.message}`, true);
+                });
+        }
+
+        function displayData(enrollments) {
+            const dataDiv = document.getElementById('data');
+            
+            if (!enrollments || enrollments.length === 0) {
+                dataDiv.innerHTML = '<p>No enrollments found</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>ID</th><th>User</th><th>Course</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+            
+            enrollments.forEach(enrollment => {
+                html += `
+                    <tr>
+                        <td>${enrollment.id}</td>
+                        <td>${enrollment.user_name}</td>
+                        <td>${enrollment.course_title}</td>
+                        <td>
+                            <select onchange="updateStatus(${enrollment.id}, this.value)">
+                                <option value="pending" ${enrollment.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
+                                <option value="approved" ${enrollment.status === 'approved' ? 'selected' : ''}>Đã duyệt</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button onclick="testUpdateSpecific(${enrollment.id})">Test Update</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            dataDiv.innerHTML = html;
+        }
+
+        function updateStatus(enrollmentId, newStatus) {
+            log(`Updating enrollment ${enrollmentId} to ${newStatus}...`);
+            
+            fetch('dp/admin_enrollments_no_auth.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    enrollment_id: enrollmentId,
+                    status: newStatus
+                })
+            })
+            .then(response => {
+                log(`Update response status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                log(`Update result: ${JSON.stringify(data)}`);
+                
+                if (data.success) {
+                    log('✅ Update successful!');
+                    loadData(); // Reload
+                } else {
+                    log(`❌ Update failed: ${data.message}`, true);
+                }
+            })
+            .catch(error => {
+                log(`❌ Update error: ${error.message}`, true);
+            });
+        }
+
+        function testUpdate() {
+            if (window.enrollments && window.enrollments.length > 0) {
+                const first = window.enrollments[0];
+                const newStatus = first.status === 'pending' ? 'approved' : 'pending';
+                updateStatus(first.id, newStatus);
+            } else {
+                log('No enrollments loaded. Click "Load Enrollments" first.', true);
+            }
+        }
+
+        function testUpdateSpecific(enrollmentId) {
+            const enrollment = window.enrollments.find(e => e.id == enrollmentId);
+            if (enrollment) {
+                const newStatus = enrollment.status === 'pending' ? 'approved' : 'pending';
+                updateStatus(enrollmentId, newStatus);
+            }
+        }
+
+        // Auto load on page load
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

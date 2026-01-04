@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enrollment Update Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
+        .result { margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test Enrollment Update Fix</h1>
+    
+    <div class="test-section">
+        <h3>1. Test Admin Session</h3>
+        <button onclick="testAdminSession()">Check Admin Session</button>
+        <button onclick="setupAdminSession()">Setup Admin Session</button>
+        <div id="sessionResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Test API Endpoints</h3>
+        <button onclick="testMainAPI()">Test Main API (with auth)</button>
+        <button onclick="testNoAuthAPI()">Test No-Auth API</button>
+        <div id="apiResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test Enrollment Update</h3>
+        <button onclick="loadAndTestUpdate()">Load Data & Test Update</button>
+        <div id="updateResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Quick Links</h3>
+        <a href="admin.html" target="_blank">Open Admin Panel</a> |
+        <a href="debug_index.html" target="_blank">Debug Page</a> |
+        <a href="dp/test_simple_debug.php" target="_blank">Simple Debug</a>
+    </div>
+
+    <script>
+        function testAdminSession() {
+            const result = document.getElementById('sessionResult');
+            result.innerHTML = 'Testing admin session...';
+            
+            fetch('dp/admin_enrollments.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        result.innerHTML = '<span class="success">✅ Admin session OK</span>';
+                    } else if (data.message === 'Không có quyền truy cập') {
+                        result.innerHTML = '<span class="warning">⚠️ No admin session - need to setup</span>';
+                    } else {
+                        result.innerHTML = '<span class="error">❌ Other error: ' + data.message + '</span>';
+                    }
+                })
+                .catch(error => {
+                    result.innerHTML = '<span class="error">❌ Network error: ' + error.message + '</span>';
+                });
+        }
+        
+        function setupAdminSession() {
+            window.location.href = 'dp/set_admin_session_quick.php';
+        }
+        
+        function testMainAPI() {
+            const result = document.getElementById('apiResult');
+            result.innerHTML = 'Testing main API...';
+            
+            fetch('dp/admin_enrollments.php')
+                .then(response => response.json())
+                .then(data => {
+                    result.innerHTML = '<h4>Main API Result:</h4><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                })
+                .catch(error => {
+                    result.innerHTML = '<span class="error">Main API Error: ' + error.message + '</span>';
+                });
+        }
+        
+        function testNoAuthAPI() {
+            const result = document.getElementById('apiResult');
+            result.innerHTML = 'Testing no-auth API...';
+            
+            fetch('dp/admin_enrollments_no_auth.php')
+                .then(response => response.json())
+                .then(data => {
+                    result.innerHTML = '<h4>No-Auth API Result:</h4><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    window.testData = data;
+                })
+                .catch(error => {
+                    result.innerHTML = '<span class="error">No-Auth API Error: ' + error.message + '</span>';
+                });
+        }
+        
+        function loadAndTestUpdate() {
+            const result = document.getElementById('updateResult');
+            result.innerHTML = 'Loading enrollments...';
+            
+            // First load data
+            fetch('dp/admin_enrollments_no_auth.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success || !data.enrollments || data.enrollments.length === 0) {
+                        result.innerHTML = '<span class="warning">⚠️ No enrollments found to test</span>';
+                        return;
+                    }
+                    
+                    const enrollment = data.enrollments[0];
+                    const newStatus = enrollment.status === 'pending' ? 'approved' : 'pending';
+                    
+                    result.innerHTML = `Testing update: ID ${enrollment.id}, ${enrollment.status} → ${newStatus}...`;
+                    
+                    // Test update with main API first
+                    fetch('dp/admin_enrollments.php', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            enrollment_id: enrollment.id,
+                            status: newStatus
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(updateData => {
+                        if (updateData.success) {
+                            result.innerHTML += '<br><span class="success">✅ Main API update successful!</span>';
+                        } else if (updateData.message === 'Không có quyền truy cập') {
+                            result.innerHTML += '<br><span class="warning">⚠️ Main API needs auth, trying no-auth...</span>';
+                            
+                            // Try no-auth API
+                            return fetch('dp/admin_enrollments_no_auth.php', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    enrollment_id: enrollment.id,
+                                    status: newStatus
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(noAuthData => {
+                                if (noAuthData.success) {
+                                    result.innerHTML += '<br><span class="success">✅ No-Auth API update successful!</span>';
+                                } else {
+                                    result.innerHTML += '<br><span class="error">❌ No-Auth API failed: ' + noAuthData.message + '</span>';
+                                }
+                            });
+                        } else {
+                            result.innerHTML += '<br><span class="error">❌ Main API failed: ' + updateData.message + '</span>';
+                        }
+                    })
+                    .catch(error => {
+                        result.innerHTML += '<br><span class="error">❌ Update error: ' + error.message + '</span>';
+                    });
+                })
+                .catch(error => {
+                    result.innerHTML = '<span class="error">❌ Load error: ' + error.message + '</span>';
+                });
+        }
+        
+        // Auto-run session test on load
+        window.addEventListener('DOMContentLoaded', function() {
+            testAdminSession();
+        });
+    </script>
+</body>
+</html>

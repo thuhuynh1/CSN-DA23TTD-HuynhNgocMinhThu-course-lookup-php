@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Trung tâm ABC</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-nav">
+            <div class="admin-logo">
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2><i class="fas fa-graduation-cap"></i> Trung tâm Ngoại ngữ - Tin học HNMT</h2>
+            </div>
+            <div class="admin-user">
+                <span id="adminName">Admin User</span>
+                <button class="btn-admin-logout" onclick="adminLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+        <nav class="admin-menu">
+            <ul>
+                <li class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>Quản lý người dùng</span>
+                </li>
+                <li class="menu-item" data-section="courses">
+                    <i class="fas fa-book"></i>
+                    <span>Quản lý khóa học</span>
+                </li>
+                <li class="menu-item" data-section="enrollments">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Đăng ký khóa học</span>
+                </li>
+                <li class="menu-item" data-section="consultations">
+                    <i class="fas fa-comments"></i>
+                    <span>Tư vấn & Liên hệ</span>
+                </li>
+                <li class="menu-item" data-section="content">
+                    <i class="fas fa-edit"></i>
+                    <span>Quản lý nội dung</span>
+                </li>
+                <li class="menu-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Thống kê & Báo cáo</span>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Admin Main Content -->
+    <main class="admin-main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="admin-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <p>Tổng quan hệ thống</p>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Tổng người dùng</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon courses">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalCourses">6</h3>
+                        <p>Khóa học</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon enrollments">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalEnrollments">0</h3>
+                        <p>Đăng ký khóa học</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon consultations">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalConsultations">0</h3>
+                        <p>Yêu cầu tư vấn</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-charts">
+                <div class="chart-container">
+                    <h3>Đăng ký theo tháng</h3>
+                    <canvas id="enrollmentChart"></canvas>
+                </div>
+                <div class="recent-activities">
+                    <h3>Hoạt động gần đây</h3>
+                    <div id="recentActivities" class="activity-list">
+                        <!-- Activities will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Management Section -->
+        <section id="users" class="admin-section">
+            <div class="section-header">
+                <h1>Quản lý người dùng</h1>
+                <button class="btn btn-primary" onclick="showAddUserModal()">
+                    <i class="fas fa-plus"></i> Thêm học viên
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Courses Management Section -->
+        <section id="courses" class="admin-section">
+            <div class="section-header">
+                <h1>Quản lý khóa học</h1>
+                <button class="btn btn-primary" onclick="showAddCourseModal()">
+                    <i class="fas fa-plus"></i> Thêm khóa học
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-filters">
+                    <input type="text" id="courseSearch" placeholder="Tìm kiếm khóa học...">
+                    <select id="courseCategoryFilter">
+                        <option value="">Tất cả danh mục</option>
+                        <option value="language">Ngoại ngữ</option>
+                        <option value="it">Tin học</option>
+                        <option value="marketing">Marketing</option>
+                    </select>
+                    <select id="courseStatusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Không hoạt động</option>
+                    </select>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên khóa học</th>
+                            <th>Danh mục</th>
+                            <th>Học phí</th>
+                            <th>Thời lượng</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coursesTableBody">
+                        <!-- Courses will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Enrollments Section -->
+        <section id="enrollments" class="admin-section">
+            <div class="section-header">
+                <h1>Quản lý đăng ký khóa học</h1>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-filters">
+                    <input type="text" id="enrollmentSearch" placeholder="Tìm kiếm đăng ký...">
+                    <select id="enrollmentStatusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending">Chờ xử lý</option>
+                        <option value="approved">Đã duyệt</option>
+                    </select>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Học viên</th>
+                            <th>Khóa học</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="enrollmentsTableBody">
+                        <!-- Enrollments will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+
+        <!-- Consultations Section -->
+        <section id="consultations" class="admin-section">
+            <div class="section-header">
+                <h1>Yêu cầu tư vấn & Liên hệ</h1>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-filters">
+                    <input type="text" id="consultationSearch" placeholder="Tìm kiếm yêu cầu...">
+                    <select id="consultationStatusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="new">Mới</option>
+                        <option value="processing">Đang xử lý</option>
+                        <option value="completed">Hoàn thành</option>
+                    </select>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Khóa học quan tâm</th>
+                            <th>Ngày gửi</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="consultationsTableBody">
+                        <!-- Consultations will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Content Management Section -->
+        <section id="content" class="admin-section">
+            <div class="section-header">
+                <h1>Quản lý nội dung</h1>
+                <button class="btn btn-primary" onclick="showAddContentModal()">
+                    <i class="fas fa-plus"></i> Thêm nội dung
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-filters">
+                    <input type="text" id="contentSearch" placeholder="Tìm kiếm nội dung...">
+                    <select id="contentTypeFilter">
+                        <option value="">Tất cả loại</option>
+                        <option value="contact_info">Thông tin liên hệ</option>
+                        <option value="announcement">Thông báo</option>
+                    </select>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Loại nội dung</th>
+                            <th>Tiêu đề</th>
+                            <th>Trạng thái</th>
+                            <th>Cập nhật</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contentTableBody">
+                        <!-- Content will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Analytics & Reports Section -->
+        <section id="analytics" class="admin-section">
+            <div class="section-header">
+                <h1>Thống kê đơn giản</h1>
+                <p>Tổng quan các số liệu cơ bản</p>
+            </div>
+            
+            <!-- Basic Stats -->
+            <div class="analytics-container">
+                <h3>📊 Thống kê tổng quan</h3>
+                <div class="analytics-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon analytics">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="analyticsUsers">0</h3>
+                            <p>Tổng người dùng</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon analytics">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="analyticsEnrollments">0</h3>
+                            <p>Đăng ký khóa học</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon analytics">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="analyticsConsultations">0</h3>
+                            <p>Yêu cầu tư vấn</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon analytics">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="analyticsVisits">0</h3>
+                            <p>Lượt truy cập hôm nay</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Reports -->
+            <div class="simple-reports">
+                <div class="report-card">
+                    <h4>📈 Khóa học phổ biến</h4>
+                    <div id="popularCourses" class="report-content">
+                        <p>Đang tải...</p>
+                    </div>
+                </div>
+                
+                <div class="report-card">
+                    <h4>📅 Hoạt động gần đây</h4>
+                    <div id="recentActivity" class="report-content">
+                        <p>Đang tải...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+
+    <!-- Modals -->
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm học viên mới</h2>
+                <span class="close" onclick="closeAdminModal('addUserModal')">&times;</span>
+            </div>
+            <form id="addUserForm" class="admin-form">
+                <div class="form-group">
+                    <label>Họ và tên</label>
+                    <input type="text" name="full_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu tạm thời</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm học viên</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="addCourseModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Thêm khóa học mới</h2>
+                <span class="close" onclick="closeAdminModal('addCourseModal')">&times;</span>
+            </div>
+            <form id="addCourseForm" class="admin-form">
+                <div class="form-group">
+                    <label>Tên khóa học</label>
+                    <input type="text" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Mô tả khóa học</label>
+                    <textarea name="description" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Danh mục</label>
+                        <select name="category" required>
+                            <option value="language">Ngoại ngữ</option>
+                            <option value="it">Tin học</option>
+                            <option value="marketing">Marketing</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Học phí (VNĐ/tháng)</label>
+                        <input type="number" name="price" required min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Thời lượng (tháng)</label>
+                        <input type="number" name="duration" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Trình độ</label>
+                        <select name="level">
+                            <option value="Cơ bản">Cơ bản</option>
+                            <option value="Trung cấp">Trung cấp</option>
+                            <option value="Nâng cao">Nâng cao</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Lịch học</label>
+                    <input type="text" name="schedule" placeholder="VD: Thứ 2, 4, 6 - 19:00-21:00">
+                </div>
+                <div class="form-group">
+                    <label>Tính năng nổi bật</label>
+                    <textarea name="features" rows="4" placeholder="Mỗi tính năng một dòng"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm khóa học</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div id="editCourseModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Chỉnh sửa khóa học</h2>
+                <span class="close" onclick="closeAdminModal('editCourseModal')">&times;</span>
+            </div>
+            <form id="editCourseForm" class="admin-form">
+                <input type="hidden" name="course_id" id="editCourseId">
+                <div class="form-group">
+                    <label>Tên khóa học</label>
+                    <input type="text" name="title" id="editCourseTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Mô tả khóa học</label>
+                    <textarea name="description" id="editCourseDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Danh mục</label>
+                        <select name="category" id="editCourseCategory" required>
+                            <option value="language">Ngoại ngữ</option>
+                            <option value="it">Tin học</option>
+                            <option value="marketing">Marketing</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Học phí (VNĐ/tháng)</label>
+                        <input type="number" name="price" id="editCoursePrice" required min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Thời lượng (tháng)</label>
+                        <input type="number" name="duration" id="editCourseDuration" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Trình độ</label>
+                        <select name="level" id="editCourseLevel">
+                            <option value="Cơ bản">Cơ bản</option>
+                            <option value="Trung cấp">Trung cấp</option>
+                            <option value="Nâng cao">Nâng cao</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Lịch học</label>
+                    <input type="text" name="schedule" id="editCourseSchedule" placeholder="VD: Thứ 2, 4, 6 - 19:00-21:00">
+                </div>
+                <div class="form-group">
+                    <label>Tính năng nổi bật</label>
+                    <textarea name="features" id="editCourseFeatures" rows="4" placeholder="Mỗi tính năng một dòng"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Cập nhật khóa học</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Course Detail Modal -->
+    <div id="courseDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chi tiết khóa học</h2>
+                <span class="close" onclick="closeAdminModal('courseDetailModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="courseDetailContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Content Modal -->
+    <div id="addContentModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Thêm nội dung mới</h2>
+                <span class="close" onclick="closeAdminModal('addContentModal')">&times;</span>
+            </div>
+            <form id="addContentForm" class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loại nội dung</label>
+                        <select name="content_type" required id="contentTypeSelect" onchange="updateFormPlaceholders()">
+                            <option value="contact_info">Thông tin liên hệ</option>
+                            <option value="announcement">Thông báo</option>
+                        </select>
+                        <small class="form-help">
+                            <strong>Thông tin liên hệ:</strong> Hiển thị ở trang Liên hệ<br>
+                            <strong>Thông báo:</strong> Hiển thị ở trang chủ
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <select name="status">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tiêu đề</label>
+                    <input type="text" name="title" required id="titleInput" placeholder="Nhập tiêu đề...">
+                    <small class="form-help" id="titleHelp">Ví dụ: Địa chỉ, Điện thoại, Email...</small>
+                </div>
+                <div class="form-group">
+                    <label>Nội dung</label>
+                    <textarea name="content" rows="6" required id="contentInput" placeholder="Nhập nội dung..."></textarea>
+                    <small class="form-help" id="contentHelp">Nhập thông tin chi tiết...</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm nội dung</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Content Modal -->
+    <div id="editContentModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Chỉnh sửa nội dung</h2>
+                <span class="close" onclick="closeAdminModal('editContentModal')">&times;</span>
+            </div>
+            <form id="editContentForm" class="admin-form">
+                <input type="hidden" name="content_id" id="editContentId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loại nội dung</label>
+                        <select name="content_type" id="editContentType" disabled>
+                            <option value="contact_info">Thông tin liên hệ</option>
+                            <option value="announcement">Thông báo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <select name="status" id="editContentStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tiêu đề</label>
+                    <input type="text" name="title" id="editContentTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Nội dung</label>
+                    <textarea name="content" id="editContentContent" rows="6" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Cập nhật nội dung</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail Modals -->
+    <!-- Enrollment Detail Modal -->
+    <div id="enrollmentDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chi tiết đăng ký khóa học</h2>
+                <span class="close" onclick="closeAdminModal('enrollmentDetailModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="enrollmentDetailContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultation Detail Modal -->
+    <div id="consultationDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chi tiết yêu cầu tư vấn</h2>
+                <span class="close" onclick="closeAdminModal('consultationDetailModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="consultationDetailContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        // Kiểm tra đăng nhập admin khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kiểm tra admin session
+            checkAdminSession();
+            
+            // Hiển thị thông tin admin mặc định
+            document.getElementById('adminName').textContent = 'Huỳnh Ngọc Minh Thư';
+            
+            // Load dashboard data trực tiếp
+            loadDashboardData();
+        });
+
+        function checkAdminSession() {
+            // Test admin session bằng cách gọi API
+            fetch('dp/admin_enrollments.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success && data.message === 'Không có quyền truy cập') {
+                        showAdminSessionWarning();
+                    }
+                })
+                .catch(error => {
+                    console.log('Session check failed:', error);
+                });
+        }
+
+        function showAdminSessionWarning() {
+            const warningDiv = document.createElement('div');
+            warningDiv.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; background: #dc2626; color: white; padding: 10px; text-align: center; z-index: 9999;">
+                    <strong>⚠️ Chưa có quyền admin!</strong> 
+                    <button onclick="setupAdminSession()" style="background: white; color: #dc2626; border: none; padding: 5px 10px; margin-left: 10px; border-radius: 3px; cursor: pointer;">
+                        Thiết lập Admin Session
+                    </button>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: transparent; color: white; border: 1px solid white; padding: 5px 10px; margin-left: 5px; border-radius: 3px; cursor: pointer;">
+                        Đóng
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(warningDiv);
+        }
+
+        function setupAdminSession() {
+            window.location.href = 'dp/set_admin_session_quick.php';
+        }
+
+        function loadDashboardData() {
+            // Load thống kê dashboard
+            fetch('dp/admin_dashboard.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('totalUsers').textContent = data.stats.totalUsers;
+                        document.getElementById('totalCourses').textContent = data.stats.totalCourses || 6;
+                        document.getElementById('totalEnrollments').textContent = data.stats.totalEnrollments;
+                        document.getElementById('totalConsultations').textContent = data.stats.totalConsultations || 0;
+                        
+                        // Load recent activities if available
+                        if (data.recentActivities) {
+                            loadRecentActivities(data.recentActivities);
+                        }
+                        
+                        console.log('Dashboard loaded successfully');
+                    } else {
+                        console.error('Dashboard error:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading dashboard:', error);
+                });
+        }
+
+        // Hàm checkAdminLogin đã bị xóa để tránh redirect loop
+        
+        // Hàm loadAdminDashboardSafe đã được thay thế bằng loadDashboardData
+
+        function adminLogout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                window.location.href = 'dp/admin_logout.php';
+            }
+        }
+
+
+
+        function loadRecentActivities(activities) {
+            const container = document.getElementById('recentActivities');
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<p>Chưa có hoạt động nào</p>';
+                return;
+            }
+            
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-info">
+                        <strong>${activity.user_name}</strong> đăng ký khóa học 
+                        <strong>${activity.course_title}</strong>
+                    </div>
+                    <div class="activity-time">
+                        ${new Date(activity.enrolled_at).toLocaleDateString('vi-VN')}
+                    </div>
+                    <div class="activity-status status-${activity.status}">
+                        ${getStatusText(activity.status)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadUsers() {
+            fetch('dp/admin_users.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayUsers(data.users);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                });
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">Chưa có học viên nào</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.full_name}</td>
+                    <td>${user.email}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadEnrollments() {
+            // Try main API first, fallback to no-auth version
+            fetch('dp/admin_enrollments.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Enrollments loaded:', data);
+                    if (data.success) {
+                        displayEnrollments(data.enrollments);
+                    } else if (data.message === 'Không có quyền truy cập') {
+                        // Fallback to no-auth version
+                        return fetch('dp/admin_enrollments_no_auth.php')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    displayEnrollments(data.enrollments);
+                                    showAdminSessionWarning();
+                                } else {
+                                    console.error('Failed to load enrollments:', data);
+                                }
+                            });
+                    } else {
+                        console.error('Failed to load enrollments:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading enrollments:', error);
+                    // Try no-auth version as fallback
+                    fetch('dp/admin_enrollments_no_auth.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayEnrollments(data.enrollments);
+                                showAdminSessionWarning();
+                            }
+                        })
+                        .catch(err => console.error('Fallback also failed:', err));
+                });
+        }
+
+        function displayEnrollments(enrollments) {
+            const tbody = document.getElementById('enrollmentsTableBody');
+            if (!enrollments || enrollments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">Chưa có đăng ký khóa học nào</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = enrollments.map(enrollment => `
+                <tr>
+                    <td>${enrollment.id}</td>
+                    <td>
+                        <div><strong>${enrollment.user_name}</strong></div>
+                        <div class="text-muted">${enrollment.user_email}</div>
+                    </td>
+                    <td>${enrollment.course_title}</td>
+                    <td>${new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <select class="status-select" onchange="updateEnrollmentStatus(${enrollment.id}, this.value)">
+                            <option value="pending" ${enrollment.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
+                            <option value="approved" ${enrollment.status === 'approved' ? 'selected' : ''}>Đã duyệt</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-info" onclick="viewEnrollmentDetails(${enrollment.id})" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteEnrollment(${enrollment.id})" title="Xóa đăng ký">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadConsultations() {
+            fetch('dp/admin_consultations.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayConsultations(data.consultations);
+                    } else {
+                        console.error('Error:', data.message);
+                        // Hiển thị thông báo lỗi trong bảng
+                        const tbody = document.getElementById('consultationsTableBody');
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #ef4444;">Lỗi tải dữ liệu: ' + data.message + '</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading consultations:', error);
+                    const tbody = document.getElementById('consultationsTableBody');
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #ef4444;">Không thể tải dữ liệu tư vấn</td></tr>';
+                });
+        }
+
+        function displayConsultations(consultations) {
+            const tbody = document.getElementById('consultationsTableBody');
+            if (!consultations || consultations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">Chưa có yêu cầu tư vấn nào</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = consultations.map(consultation => `
+                <tr>
+                    <td>${consultation.id}</td>
+                    <td>${consultation.full_name}</td>
+                    <td>${consultation.email}</td>
+                    <td>${consultation.phone}</td>
+                    <td>${consultation.course_interest || 'N/A'}</td>
+                    <td>${new Date(consultation.created_at).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <select class="status-select" onchange="updateConsultationStatus(${consultation.id}, this.value)">
+                            <option value="new" ${consultation.status === 'new' ? 'selected' : ''}>Mới</option>
+                            <option value="processing" ${consultation.status === 'processing' ? 'selected' : ''}>Đang xử lý</option>
+                            <option value="completed" ${consultation.status === 'completed' ? 'selected' : ''}>Hoàn thành</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-info" onclick="viewConsultationDetails(${consultation.id})" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteConsultation(${consultation.id})" title="Xóa yêu cầu">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateEnrollmentStatus(enrollmentId, status) {
+            console.log('Updating enrollment:', enrollmentId, 'to status:', status);
+            
+            // Try main API first
+            fetch('dp/admin_enrollments.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    enrollment_id: enrollmentId,
+                    status: status
+                })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    alert('✅ Cập nhật trạng thái thành công');
+                    loadEnrollments(); // Reload data
+                } else if (data.message === 'Không có quyền truy cập') {
+                    // Try no-auth version
+                    return fetch('dp/admin_enrollments_no_auth.php', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            enrollment_id: enrollmentId,
+                            status: status
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('✅ Cập nhật trạng thái thành công (no-auth)');
+                            loadEnrollments();
+                            showAdminSessionWarning();
+                        } else {
+                            alert('❌ Lỗi: ' + data.message);
+                            console.error('Error details:', data);
+                        }
+                    });
+                } else {
+                    alert('❌ Lỗi: ' + data.message);
+                    console.error('Error details:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('❌ Có lỗi xảy ra: ' + error.message);
+            });
+        }
+
+        function deleteEnrollment(enrollmentId) {
+            if (confirm('Bạn có chắc chắn muốn xóa đăng ký này? Hành động này không thể hoàn tác.')) {
+                fetch('dp/admin_enrollments.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        enrollment_id: enrollmentId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa đăng ký thành công');
+                        loadEnrollments(); // Reload data
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa đăng ký');
+                });
+            }
+        }
+
+        function updateConsultationStatus(consultationId, status) {
+            fetch('dp/admin_consultations.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    consultation_id: consultationId,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cập nhật trạng thái thành công');
+                    loadConsultations(); // Reload data
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra');
+            });
+        }
+
+        function deleteConsultation(consultationId) {
+            if (confirm('Bạn có chắc chắn muốn xóa yêu cầu tư vấn này không? Hành động này không thể hoàn tác.')) {
+                fetch('dp/admin_consultations.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        consultation_id: consultationId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa yêu cầu tư vấn thành công');
+                        loadConsultations(); // Reload data
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa yêu cầu');
+                });
+            }
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Chờ xử lý',
+                'active': 'Đã duyệt',
+                'completed': 'Hoàn thành',
+                'new': 'Mới',
+                'processing': 'Đang xử lý'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Các function còn thiếu
+        function deleteUser(userId) {
+            if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
+                fetch('dp/admin_users.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa người dùng thành công');
+                        loadUsers(); // Reload data
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra');
+                });
+            }
+        }
+
+        function showAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'block';
+        }
+
+        function showAddCourseModal() {
+            document.getElementById('addCourseModal').style.display = 'block';
+        }
+
+        function closeAdminModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function viewEnrollmentDetails(enrollmentId) {
+            // Lấy chi tiết đăng ký từ server
+            fetch(`dp/admin_enrollments.php?id=${enrollmentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const enrollment = data.enrollment;
+                        const content = document.getElementById('enrollmentDetailContent');
+                        
+                        // Parse course features nếu có
+                        let features = [];
+                        try {
+                            features = JSON.parse(enrollment.course_features || '[]');
+                        } catch (e) {
+                            features = [];
+                        }
+                        
+                        content.innerHTML = `
+                            <div class="detail-section">
+                                <h3><i class="fas fa-user"></i> Thông tin học viên</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Họ tên:</label>
+                                        <span>${enrollment.user_name}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Email:</label>
+                                        <span>${enrollment.user_email}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Ngày đăng ký tài khoản:</label>
+                                        <span>${new Date(enrollment.user_created_at).toLocaleDateString('vi-VN')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h3><i class="fas fa-book"></i> Thông tin khóa học</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Tên khóa học:</label>
+                                        <span>${enrollment.course_title}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Học phí:</label>
+                                        <span>${new Intl.NumberFormat('vi-VN').format(enrollment.course_price)} VNĐ/tháng</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Thời lượng:</label>
+                                        <span>${enrollment.course_duration} tháng</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Trình độ:</label>
+                                        <span>${enrollment.course_level}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Lịch học:</label>
+                                        <span>${enrollment.course_schedule}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item full-width">
+                                    <label>Mô tả khóa học:</label>
+                                    <p>${enrollment.course_description}</p>
+                                </div>
+                                
+                                ${features.length > 0 ? `
+                                <div class="detail-item full-width">
+                                    <label>Tính năng nổi bật:</label>
+                                    <ul class="feature-list">
+                                        ${features.map(feature => `<li>${feature}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h3><i class="fas fa-info-circle"></i> Thông tin đăng ký</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Ngày đăng ký:</label>
+                                        <span>${new Date(enrollment.enrolled_at).toLocaleDateString('vi-VN')} ${new Date(enrollment.enrolled_at).toLocaleTimeString('vi-VN')}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Trạng thái:</label>
+                                        <span class="status-badge status-${enrollment.status}">${getStatusText(enrollment.status)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Hiển thị modal
+                        document.getElementById('enrollmentDetailModal').style.display = 'block';
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tải chi tiết');
+                });
+        }
+
+        function viewConsultationDetails(consultationId) {
+            // Lấy chi tiết tư vấn từ server
+            fetch(`dp/admin_consultations.php?id=${consultationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const consultation = data.consultation;
+                        const content = document.getElementById('consultationDetailContent');
+                        
+                        content.innerHTML = `
+                            <div class="detail-section">
+                                <h3><i class="fas fa-user"></i> Thông tin liên hệ</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Họ tên:</label>
+                                        <span>${consultation.full_name}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Email:</label>
+                                        <span><a href="mailto:${consultation.email}">${consultation.email}</a></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Số điện thoại:</label>
+                                        <span><a href="tel:${consultation.phone}">${consultation.phone}</a></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Khóa học quan tâm:</label>
+                                        <span>${consultation.course_interest || 'Chưa chọn'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h3><i class="fas fa-comment"></i> Nội dung tin nhắn</h3>
+                                <div class="message-content">
+                                    <p>${consultation.message || 'Không có tin nhắn'}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h3><i class="fas fa-info-circle"></i> Thông tin xử lý</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Ngày gửi:</label>
+                                        <span>${new Date(consultation.created_at).toLocaleDateString('vi-VN')} ${new Date(consultation.created_at).toLocaleTimeString('vi-VN')}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Trạng thái:</label>
+                                        <span class="status-badge status-${consultation.status}">${getStatusText(consultation.status)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-actions">
+                                <button class="btn btn-primary" onclick="updateConsultationStatusFromModal(${consultation.id}, 'processing')">
+                                    <i class="fas fa-play"></i> Đang xử lý
+                                </button>
+                                <button class="btn btn-success" onclick="updateConsultationStatusFromModal(${consultation.id}, 'completed')">
+                                    <i class="fas fa-check"></i> Hoàn thành
+                                </button>
+                                <button class="btn btn-secondary" onclick="closeAdminModal('consultationDetailModal')">
+                                    <i class="fas fa-times"></i> Đóng
+                                </button>
+                            </div>
+                        `;
+                        
+                        // Hiển thị modal
+                        document.getElementById('consultationDetailModal').style.display = 'block';
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tải chi tiết');
+                });
+        }
+
+        function updateConsultationStatusFromModal(consultationId, status) {
+            fetch('dp/admin_consultations.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    consultation_id: consultationId,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cập nhật trạng thái thành công');
+                    closeAdminModal('consultationDetailModal');
+                    loadConsultations(); // Reload data
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra');
+            });
+        }
+
+        // Course Management Functions
+        function loadCourses() {
+            fetch('dp/admin_courses.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayCourses(data.courses);
+                    } else {
+                        console.error('Error:', data.message);
+                        const tbody = document.getElementById('coursesTableBody');
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444;">Lỗi tải dữ liệu: ' + data.message + '</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading courses:', error);
+                    const tbody = document.getElementById('coursesTableBody');
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444;">Không thể tải dữ liệu khóa học</td></tr>';
+                });
+        }
+
+        function displayCourses(courses) {
+            const tbody = document.getElementById('coursesTableBody');
+            if (!courses || courses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b;">Chưa có khóa học nào</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = courses.map(course => `
+                <tr>
+                    <td>${course.id}</td>
+                    <td>
+                        <div><strong>${course.title}</strong></div>
+                        <div class="text-muted">${course.level}</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-${getCategoryClass(course.category)}">${getCategoryText(course.category)}</span>
+                    </td>
+                    <td>${new Intl.NumberFormat('vi-VN').format(course.price)} VNĐ</td>
+                    <td>${course.duration} tháng</td>
+                    <td>
+                        <select class="status-select" onchange="updateCourseStatus(${course.id}, this.value)">
+                            <option value="active" ${course.status === 'active' ? 'selected' : ''}>Hoạt động</option>
+                            <option value="inactive" ${course.status === 'inactive' ? 'selected' : ''}>Không hoạt động</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewCourseDetails(${course.id})" title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="editCourse(${course.id})" title="Chỉnh sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCourse(${course.id})" title="Xóa">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getCategoryClass(category) {
+            const classes = {
+                'language': 'primary',
+                'it': 'success',
+                'marketing': 'warning'
+            };
+            return classes[category] || 'secondary';
+        }
+
+        function getCategoryText(category) {
+            const texts = {
+                'language': 'Ngoại ngữ',
+                'it': 'Tin học',
+                'marketing': 'Marketing'
+            };
+            return texts[category] || category;
+        }
+
+        function updateCourseStatus(courseId, status) {
+            fetch('dp/admin_courses.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    course_id: courseId,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cập nhật trạng thái thành công');
+                    loadCourses(); // Reload data
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra');
+            });
+        }
+
+        function viewCourseDetails(courseId) {
+            fetch(`dp/admin_courses.php?id=${courseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const course = data.course;
+                        const content = document.getElementById('courseDetailContent');
+                        
+                        content.innerHTML = `
+                            <div class="detail-section">
+                                <h3><i class="fas fa-book"></i> Thông tin khóa học</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Tên khóa học:</label>
+                                        <span>${course.title}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Danh mục:</label>
+                                        <span class="badge badge-${getCategoryClass(course.category)}">${getCategoryText(course.category)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Học phí:</label>
+                                        <span>${new Intl.NumberFormat('vi-VN').format(course.price)} VNĐ/tháng</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Thời lượng:</label>
+                                        <span>${course.duration} tháng</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Trình độ:</label>
+                                        <span>${course.level}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Lịch học:</label>
+                                        <span>${course.schedule || 'Chưa cập nhật'}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Trạng thái:</label>
+                                        <span class="status-badge status-${course.status}">${course.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Ngày tạo:</label>
+                                        <span>${new Date(course.created_at).toLocaleDateString('vi-VN')} ${new Date(course.created_at).toLocaleTimeString('vi-VN')}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item full-width">
+                                    <label>Mô tả khóa học:</label>
+                                    <p>${course.description || 'Chưa có mô tả'}</p>
+                                </div>
+                                
+                                ${course.features && course.features.length > 0 ? `
+                                <div class="detail-item full-width">
+                                    <label>Tính năng nổi bật:</label>
+                                    <ul class="feature-list">
+                                        ${course.features.map(feature => `<li>${feature}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        document.getElementById('courseDetailModal').style.display = 'block';
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tải chi tiết');
+                });
+        }
+
+        function editCourse(courseId) {
+            fetch(`dp/admin_courses.php?id=${courseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const course = data.course;
+                        
+                        // Fill form with course data
+                        document.getElementById('editCourseId').value = course.id;
+                        document.getElementById('editCourseTitle').value = course.title;
+                        document.getElementById('editCourseDescription').value = course.description || '';
+                        document.getElementById('editCourseCategory').value = course.category;
+                        document.getElementById('editCoursePrice').value = course.price;
+                        document.getElementById('editCourseDuration').value = course.duration;
+                        document.getElementById('editCourseLevel').value = course.level;
+                        document.getElementById('editCourseSchedule').value = course.schedule || '';
+                        document.getElementById('editCourseFeatures').value = course.features ? course.features.join('\n') : '';
+                        
+                        document.getElementById('editCourseModal').style.display = 'block';
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tải thông tin khóa học');
+                });
+        }
+
+        function deleteCourse(courseId) {
+            if (confirm('Bạn có chắc chắn muốn xóa khóa học này? Hành động này không thể hoàn tác.')) {
+                fetch('dp/admin_courses.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa khóa học thành công');
+                        loadCourses(); // Reload data
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra');
+                });
+            }
+        }
+
+
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Navigation between sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sections = document.querySelectorAll('.admin-section');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionId = this.dataset.section;
+                    
+                    // Update active menu item
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === sectionId) {
+                            section.classList.add('active');
+                        }
+                    });
+                    
+                    // Load data for specific sections when clicked
+                    switch(sectionId) {
+                        case 'users':
+                            loadUsers();
+                            break;
+                        case 'courses':
+                            loadCourses();
+                            break;
+                        case 'enrollments':
+                            loadEnrollments();
+                            break;
+                        case 'consultations':
+                            loadConsultations();
+                            break;
+                        case 'content':
+                            loadContent();
+                            break;
+                        case 'analytics':
+                            loadAnalytics();
+                            break;
+                        case 'dashboard':
+                            loadDashboardData();
+                            break;
+                    }
+                });
+            });
+            
+            // Handle form submissions
+            const addUserForm = document.getElementById('addUserForm');
+            if (addUserForm) {
+                addUserForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const userData = {
+                        full_name: formData.get('full_name'),
+                        email: formData.get('email'),
+                        password: formData.get('password')
+                    };
+                    
+                    fetch('dp/admin_users.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Thêm học viên thành công');
+                            closeAdminModal('addUserModal');
+                            this.reset();
+                            loadUsers();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra');
+                    });
+                });
+            }
+
+            // Handle add course form
+            const addCourseForm = document.getElementById('addCourseForm');
+            if (addCourseForm) {
+                addCourseForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const features = formData.get('features').split('\n').filter(f => f.trim() !== '');
+                    
+                    const courseData = {
+                        title: formData.get('title'),
+                        description: formData.get('description'),
+                        category: formData.get('category'),
+                        price: parseFloat(formData.get('price')),
+                        duration: parseInt(formData.get('duration')),
+                        level: formData.get('level'),
+                        schedule: formData.get('schedule'),
+                        features: features
+                    };
+                    
+                    fetch('dp/admin_courses.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(courseData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Thêm khóa học thành công');
+                            closeAdminModal('addCourseModal');
+                            this.reset();
+                            loadCourses();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra');
+                    });
+                });
+            }
+
+            // Handle edit course form
+            const editCourseForm = document.getElementById('editCourseForm');
+            if (editCourseForm) {
+                editCourseForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const features = formData.get('features').split('\n').filter(f => f.trim() !== '');
+                    
+                    const courseData = {
+                        course_id: parseInt(formData.get('course_id')),
+                        title: formData.get('title'),
+                        description: formData.get('description'),
+                        category: formData.get('category'),
+                        price: parseFloat(formData.get('price')),
+                        duration: parseInt(formData.get('duration')),
+                        level: formData.get('level'),
+                        schedule: formData.get('schedule'),
+                        features: features
+                    };
+                    
+                    fetch('dp/admin_courses.php', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(courseData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Cập nhật khóa học thành công');
+                            closeAdminModal('editCourseModal');
+                            loadCourses();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra');
+                    });
+                });
+            }
+            
+            // Handle search and filters
+            const userSearch = document.getElementById('userSearch');
+            if (userSearch) {
+                userSearch.addEventListener('input', function() {
+                    const searchTerm = this.value;
+                    fetch(`dp/admin_users.php?search=${encodeURIComponent(searchTerm)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayUsers(data.users);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            }
+            
+            const enrollmentSearch = document.getElementById('enrollmentSearch');
+            if (enrollmentSearch) {
+                enrollmentSearch.addEventListener('input', function() {
+                    const searchTerm = this.value;
+                    const status = document.getElementById('enrollmentStatusFilter').value;
+                    
+                    let url = 'dp/admin_enrollments.php?';
+                    const params = [];
+                    
+                    if (searchTerm) {
+                        params.push(`search=${encodeURIComponent(searchTerm)}`);
+                    }
+                    if (status) {
+                        params.push(`status=${encodeURIComponent(status)}`);
+                    }
+                    
+                    url += params.join('&');
+                    
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayEnrollments(data.enrollments);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            }
+            
+            // Handle enrollment status filter
+            const enrollmentStatusFilter = document.getElementById('enrollmentStatusFilter');
+            if (enrollmentStatusFilter) {
+                enrollmentStatusFilter.addEventListener('change', function() {
+                    const searchTerm = document.getElementById('enrollmentSearch').value;
+                    const status = this.value;
+                    
+                    let url = 'dp/admin_enrollments.php?';
+                    const params = [];
+                    
+                    if (searchTerm) {
+                        params.push(`search=${encodeURIComponent(searchTerm)}`);
+                    }
+                    if (status) {
+                        params.push(`status=${encodeURIComponent(status)}`);
+                    }
+                    
+                    url += params.join('&');
+                    
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayEnrollments(data.enrollments);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            }
+            
+            const consultationSearch = document.getElementById('consultationSearch');
+            if (consultationSearch) {
+                consultationSearch.addEventListener('input', function() {
+                    const searchTerm = this.value;
+                    const status = document.getElementById('consultationStatusFilter').value;
+                    
+                    let url = 'dp/admin_consultations.php?';
+                    const params = [];
+                    
+                    if (searchTerm) {
+                        params.push(`search=${encodeURIComponent(searchTerm)}`);
+                    }
+                    if (status) {
+                        params.push(`status=${encodeURIComponent(status)}`);
+                    }
+                    
+                    url += params.join('&');
+                    
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayConsultations(data.consultations);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            }
+            
+            // Handle consultation status filter
+            const consultationStatusFilter = document.getElementById('consultationStatusFilter');
+            if (consultationStatusFilter) {
+                consultationStatusFilter.addEventListener('change', function() {
+                    const searchTerm = document.getElementById('consultationSearch').value;
+                    const status = this.value;
+                    
+                    let url = 'dp/admin_consultations.php?';
+                    const params = [];
+                    
+                    if (searchTerm) {
+                        params.push(`search=${encodeURIComponent(searchTerm)}`);
+                    }
+                    if (status) {
+                        params.push(`status=${encodeURIComponent(status)}`);
+                    }
+                    
+                    url += params.join('&');
+                    
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayConsultations(data.consultations);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            }
+
+            // Handle course search and filters
+            const courseSearch = document.getElementById('courseSearch');
+            if (courseSearch) {
+                courseSearch.addEventListener('input', function() {
+                    filterCourses();
+                });
+            }
+
+            const courseCategoryFilter = document.getElementById('courseCategoryFilter');
+            if (courseCategoryFilter) {
+                courseCategoryFilter.addEventListener('change', function() {
+                    filterCourses();
+                });
+            }
+
+            const courseStatusFilter = document.getElementById('courseStatusFilter');
+            if (courseStatusFilter) {
+                courseStatusFilter.addEventListener('change', function() {
+                    filterCourses();
+                });
+            }
+
+            function filterCourses() {
+                const search = document.getElementById('courseSearch').value;
+                const category = document.getElementById('courseCategoryFilter').value;
+                const status = document.getElementById('courseStatusFilter').value;
+                
+                let url = 'dp/admin_courses.php?';
+                const params = [];
+                
+                if (search) params.push(`search=${encodeURIComponent(search)}`);
+                if (category) params.push(`category=${encodeURIComponent(category)}`);
+                if (status) params.push(`status=${encodeURIComponent(status)}`);
+                
+                url += params.join('&');
+                
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            displayCourses(data.courses);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            // Handle add content form
+            const addContentForm = document.getElementById('addContentForm');
+            if (addContentForm) {
+                addContentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const contentData = {
+                        content_type: formData.get('content_type'),
+                        title: formData.get('title'),
+                        content: formData.get('content'),
+                        status: formData.get('status')
+                    };
+                    
+                    fetch('dp/admin_content.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(contentData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Thêm nội dung thành công');
+                            closeAdminModal('addContentModal');
+                            this.reset();
+                            loadContent();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra');
+                    });
+                });
+            }
+
+            // Handle edit content form
+            const editContentForm = document.getElementById('editContentForm');
+            if (editContentForm) {
+                editContentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const contentData = {
+                        content_id: parseInt(formData.get('content_id')),
+                        title: formData.get('title'),
+                        content: formData.get('content'),
+                        status: formData.get('status')
+                    };
+                    
+                    fetch('dp/admin_content.php', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(contentData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Cập nhật nội dung thành công');
+                            closeAdminModal('editContentModal');
+                            loadContent();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra');
+                    });
+                });
+            }
+        });
+
+        // Content Management Functions
+        function loadContent() {
+            fetch('dp/admin_content.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayContent(data.content);
+                    } else {
+                        console.error('Error:', data.message);
+                        const tbody = document.getElementById('contentTableBody');
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ef4444;">Lỗi tải dữ liệu: ' + data.message + '</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading content:', error);
+                    const tbody = document.getElementById('contentTableBody');
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ef4444;">Không thể tải dữ liệu nội dung</td></tr>';
+                });
+        }
+
+        function displayContent(contents) {
+            const tbody = document.getElementById('contentTableBody');
+            if (!contents || contents.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">Chưa có nội dung nào</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = contents.map(content => `
+                <tr>
+                    <td>${content.id}</td>
+                    <td>
+                        <span class="badge badge-${getContentTypeClass(content.content_type)}">${getContentTypeText(content.content_type)}</span>
+                    </td>
+                    <td>
+                        <div><strong>${content.title}</strong></div>
+                        <div class="text-muted">${content.content ? content.content.substring(0, 50) + '...' : ''}</div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${content.status}">${content.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}</span>
+                    </td>
+                    <td>${new Date(content.updated_at).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editContent(${content.id})" title="Chỉnh sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteContent(${content.id})" title="Xóa">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getContentTypeClass(type) {
+            const classes = {
+                'contact_info': 'warning',
+                'announcement': 'info'
+            };
+            return classes[type] || 'secondary';
+        }
+
+        function getContentTypeText(type) {
+            const texts = {
+                'contact_info': 'Thông tin liên hệ',
+                'announcement': 'Thông báo'
+            };
+            return texts[type] || type;
+        }
+
+        function updateFormPlaceholders() {
+            const contentType = document.getElementById('contentTypeSelect').value;
+            const titleInput = document.getElementById('titleInput');
+            const contentInput = document.getElementById('contentInput');
+            const titleHelp = document.getElementById('titleHelp');
+            const contentHelp = document.getElementById('contentHelp');
+            
+            if (contentType === 'contact_info') {
+                titleInput.placeholder = 'Ví dụ: Địa chỉ, Điện thoại, Email, Giờ làm việc...';
+                contentInput.placeholder = 'Ví dụ: 123 Đường ABC, Quận 1, TP.HCM\nhoặc (028) 1234 5678\nhoặc info@abccenter.edu.vn';
+                titleHelp.textContent = 'Tên loại thông tin liên hệ (sẽ hiển thị ở trang Liên hệ)';
+                contentHelp.textContent = 'Chi tiết thông tin liên hệ. Có thể xuống dòng bằng Enter.';
+            } else if (contentType === 'announcement') {
+                titleInput.placeholder = 'Ví dụ: Thông báo tuyển sinh, Lịch nghỉ lễ, Khuyến mãi...';
+                contentInput.placeholder = 'Ví dụ: Trung tâm thông báo tuyển sinh khóa học mới từ ngày 1/1/2024. Ưu đãi giảm 20% học phí cho 50 học viên đăng ký sớm...';
+                titleHelp.textContent = 'Tiêu đề thông báo (sẽ hiển thị ở trang chủ)';
+                contentHelp.textContent = 'Nội dung chi tiết của thông báo. Có thể xuống dòng bằng Enter.';
+            }
+        }
+
+        function showAddContentModal() {
+            document.getElementById('addContentModal').style.display = 'block';
+        }
+
+        function editContent(contentId) {
+            fetch(`dp/admin_content.php?id=${contentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.content.length > 0) {
+                        const content = data.content[0];
+                        
+                        document.getElementById('editContentId').value = content.id;
+                        document.getElementById('editContentType').value = content.content_type;
+                        document.getElementById('editContentTitle').value = content.title;
+                        document.getElementById('editContentContent').value = content.content || '';
+                        document.getElementById('editContentStatus').value = content.status;
+                        
+                        document.getElementById('editContentModal').style.display = 'block';
+                    } else {
+                        alert('Không tìm thấy nội dung');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tải nội dung');
+                });
+        }
+
+        function deleteContent(contentId) {
+            if (confirm('Bạn có chắc chắn muốn xóa nội dung này?')) {
+                fetch('dp/admin_content.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content_id: contentId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa nội dung thành công');
+                        loadContent();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra');
+                });
+            }
+        }
+
+        // Simple Analytics Functions
+        function loadAnalytics() {
+            // Load basic stats
+            loadBasicStats();
+            loadPopularCourses();
+            loadRecentActivity();
+        }
+
+        function loadBasicStats() {
+            // Sử dụng cùng API dashboard để lấy thống kê
+            fetch('dp/admin_dashboard.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('analyticsUsers').textContent = data.stats.totalUsers;
+                        document.getElementById('analyticsEnrollments').textContent = data.stats.totalEnrollments;
+                        document.getElementById('analyticsConsultations').textContent = data.stats.totalConsultations;
+                        
+                        // Load today visits (simplified)
+                        document.getElementById('analyticsVisits').textContent = data.stats.newUsersThisMonth || 0;
+                    }
+                })
+                .catch(error => {
+                    console.log('Error loading analytics:', error);
+                    // Set default values on error
+                    document.getElementById('analyticsUsers').textContent = '0';
+                    document.getElementById('analyticsEnrollments').textContent = '0';
+                    document.getElementById('analyticsConsultations').textContent = '0';
+                    document.getElementById('analyticsVisits').textContent = '0';
+                });
+        }
+
+        function loadPopularCourses() {
+            fetch('dp/admin_enrollments.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.enrollments.length > 0) {
+                        // Count enrollments by course
+                        const courseCounts = {};
+                        data.enrollments.forEach(enrollment => {
+                            const course = enrollment.course_title;
+                            courseCounts[course] = (courseCounts[course] || 0) + 1;
+                        });
+
+                        // Sort by count
+                        const sortedCourses = Object.entries(courseCounts)
+                            .sort(([,a], [,b]) => b - a)
+                            .slice(0, 5);
+
+                        let html = '';
+                        if (sortedCourses.length > 0) {
+                            html = sortedCourses.map(([course, count]) => `
+                                <div class="simple-item">
+                                    <span>${course}</span>
+                                    <span class="count">${count} đăng ký</span>
+                                </div>
+                            `).join('');
+                        } else {
+                            html = '<p>Chưa có đăng ký nào</p>';
+                        }
+
+                        document.getElementById('popularCourses').innerHTML = html;
+                    } else {
+                        document.getElementById('popularCourses').innerHTML = '<p>Chưa có dữ liệu</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('popularCourses').innerHTML = '<p>Lỗi tải dữ liệu</p>';
+                });
+        }
+
+        function loadRecentActivity() {
+            Promise.all([
+                fetch('dp/admin_enrollments.php').then(r => r.json()),
+                fetch('dp/admin_consultations.php').then(r => r.json())
+            ])
+            .then(([enrollments, consultations]) => {
+                const activities = [];
+
+                // Add recent enrollments
+                if (enrollments.success) {
+                    enrollments.enrollments.slice(0, 3).forEach(enrollment => {
+                        activities.push({
+                            type: 'enrollment',
+                            text: `${enrollment.user_name} đăng ký khóa ${enrollment.course_title}`,
+                            time: enrollment.enrolled_at
+                        });
+                    });
+                }
+
+                // Add recent consultations
+                if (consultations.success) {
+                    consultations.consultations.slice(0, 3).forEach(consultation => {
+                        activities.push({
+                            type: 'consultation',
+                            text: `${consultation.full_name} gửi yêu cầu tư vấn`,
+                            time: consultation.created_at
+                        });
+                    });
+                }
+
+                // Sort by time and take top 5
+                activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+                const recentActivities = activities.slice(0, 5);
+
+                let html = '';
+                if (recentActivities.length > 0) {
+                    html = recentActivities.map(activity => `
+                        <div class="simple-item">
+                            <span>${activity.text}</span>
+                            <span class="time">${formatTime(activity.time)}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    html = '<p>Chưa có hoạt động nào</p>';
+                }
+
+                document.getElementById('recentActivity').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('recentActivity').innerHTML = '<p>Lỗi tải dữ liệu</p>';
+            });
+        }
+
+        function formatTime(timeString) {
+            const date = new Date(timeString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 60) {
+                return `${diffMins} phút trước`;
+            } else if (diffHours < 24) {
+                return `${diffHours} giờ trước`;
+            } else {
+                return `${diffDays} ngày trước`;
+            }
+        }
+    </script>
+</body>
+</html>

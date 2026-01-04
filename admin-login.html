@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Admin - Trung tâm ABC</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .admin-login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .admin-login-header {
+            margin-bottom: 2rem;
+        }
+        
+        .admin-login-header i {
+            font-size: 3rem;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-login-header h1 {
+            color: #1e293b;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-login-header p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .admin-login-form {
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .login-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        
+        .login-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #2563eb;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="admin-login-container">
+        <div class="admin-login-header">
+            <i class="fas fa-shield-alt"></i>
+            <h1>Admin Panel</h1>
+            <p>Đăng nhập để truy cập hệ thống quản lý</p>
+        </div>
+        
+
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <form class="admin-login-form" id="adminLoginForm">
+            <div class="form-group">
+                <label for="adminEmail">Email</label>
+                <input type="email" id="adminEmail" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="adminPassword">Mật khẩu</label>
+                <input type="password" id="adminPassword" name="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </button>
+        </form>
+        
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Quay lại trang chủ
+        </a>
+    </div>
+
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Clear previous error
+            errorMessage.style.display = 'none';
+            
+            // Disable button
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
+            
+            // Gửi request đến server
+            fetch('dp/admin_login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Login response:', data);
+                
+                if (data.success) {
+                    // Đăng nhập thành công - chuyển trực tiếp không cần kiểm tra session
+                    loginBtn.innerHTML = '<i class="fas fa-check"></i> Đăng nhập thành công!';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1000);
+                } else {
+                    // Hiển thị lỗi
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = 'block';
+                    
+                    // Re-enable button
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.textContent = 'Có lỗi xảy ra khi đăng nhập';
+                errorMessage.style.display = 'block';
+                
+                // Re-enable button
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+            });
+        });
+        
+        // Auto-fill demo credentials on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kiểm tra thông báo logout
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('logout') === 'success') {
+                const successMessage = document.createElement('div');
+                successMessage.className = 'success-message';
+                successMessage.style.cssText = 'background: #d1fae5; color: #065f46; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem;';
+                successMessage.textContent = 'Đăng xuất thành công!';
+                document.querySelector('.admin-login-form').insertBefore(successMessage, document.querySelector('.form-group'));
+                
+                // Xóa parameter khỏi URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo - Trung tâm ABC</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .announcements-page {
+            padding-top: 100px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .announcements-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .announcements-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .announcements-hero .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .announcements-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .announcements-hero h1 i {
+            font-size: 3rem;
+            color: #fbbf24;
+        }
+        
+        .announcements-hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .announcements-content {
+            padding: 4rem 0;
+        }
+        
+        .announcements-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .announcements-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .announcement-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            min-height: 120px;
+        }
+        
+        .announcement-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .announcement-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border-color: #667eea;
+        }
+        
+        .announcement-card:hover::before {
+            width: 8px;
+            opacity: 1;
+        }
+        
+        .announcement-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .announcement-icon i {
+            font-size: 2rem;
+            color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .announcement-content-wrapper {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .announcement-header {
+            padding: 0;
+            background: none;
+            margin-bottom: 0.75rem;
+        }
+        
+        .announcement-header::after {
+            display: none;
+        }
+        
+        .announcement-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            width: fit-content;
+        }
+        
+        .announcement-date i {
+            font-size: 0.6rem;
+        }
+        
+        .announcement-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            display: block;
+        }
+        
+        .announcement-title i {
+            display: none;
+        }
+        
+        .announcement-body {
+            padding: 0;
+        }
+        
+        .announcement-content {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0;
+        }
+        
+        .announcement-content::first-line {
+            font-weight: 500;
+            color: #2d3748;
+        }
+        
+
+        
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            padding: 5rem 0;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: #4a5568;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: #64748b;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+        
+        .empty-state i {
+            font-size: 5rem;
+            color: #cbd5e0;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #64748b;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .announcements-hero h1 {
+                font-size: 2.5rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .announcements-hero h1 i {
+                font-size: 2rem;
+            }
+            
+            .announcements-hero p {
+                font-size: 1.1rem;
+            }
+            
+            .announcement-card {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .announcement-card::before {
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: auto;
+                width: auto;
+                height: 4px;
+            }
+            
+            .announcement-card:hover::before {
+                height: 6px;
+                width: auto;
+            }
+            
+            .announcement-card:hover {
+                transform: translateY(-4px);
+                transform: none;
+            }
+            
+            .announcement-icon {
+                width: 100%;
+                height: 60px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+            }
+            
+            .announcement-icon i {
+                color: white;
+                -webkit-text-fill-color: white;
+            }
+            
+            .announcement-content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .announcements-hero {
+                padding: 3rem 0;
+            }
+            
+            .announcements-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .announcement-title {
+                font-size: 1.2rem;
+            }
+            
+            .announcement-content-wrapper {
+                padding: 1.25rem;
+            }
+        }
+        
+        /* Animation cho announcement cards */
+        .announcement-card {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .announcement-card:nth-child(1) { animation-delay: 0.1s; }
+        .announcement-card:nth-child(2) { animation-delay: 0.2s; }
+        .announcement-card:nth-child(3) { animation-delay: 0.3s; }
+        .announcement-card:nth-child(4) { animation-delay: 0.4s; }
+        .announcement-card:nth-child(5) { animation-delay: 0.5s; }
+        .announcement-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <a href="index.html"><h2>Trung tâm Ngoại ngữ - Tin học HNMT</h2></a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="courses.html">Khóa học</a></li>
+                    <li><a href="announcements.html" class="active">Thông báo</a></li>
+                    <li><a href="contact.html">Liên hệ</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="simple_login.html" class="btn-login">Đăng nhập</a>
+                    <a href="simple_register.html" class="btn-register">Đăng ký</a>
+                    <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                        <i class="fas fa-user-shield"></i>
+                    </a>
+                </div>
+                <div class="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="announcements-page">
+        <!-- Announcements Hero -->
+        <section class="announcements-hero">
+            <div class="container">
+                <h1><i class="fas fa-bullhorn"></i> Thông báo từ trung tâm</h1>
+                <p>Cập nhật những thông tin mới nhất về các hoạt động, khóa học và sự kiện của trung tâm</p>
+            </div>
+        </section>
+
+
+
+        <!-- Announcements Content -->
+        <section class="announcements-content">
+            <div class="announcements-container">
+                <div id="announcementsContainer">
+                    <div class="loading-container">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text">Đang tải thông báo...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Trung tâm Ngoại ngữ - Tin học HNMT</h3>
+                    <p>Đào tạo chất lượng cao trong lĩnh vực ngoại ngữ và tin học</p>
+                    <div class="social-links">
+                        <a href="#" target="_blank">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" target="_blank">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Khóa học</h4>
+                    <ul>
+                        <li><a href="courses.html">Tiếng Anh</a></li>
+                        <li><a href="courses.html">IELTS/TOEIC</a></li>
+                        <li><a href="courses.html">Lập trình</a></li>
+                        <li><a href="courses.html">Tin học văn phòng</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên kết</h4>
+                    <ul>
+                        <li><a href="announcements.html">Thông báo</a></li>
+                        <li><a href="#">Tin tức</a></li>
+                        <li><a href="#">Chính sách</a></li>
+                        <li><a href="admin-login.html">Admin</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Trung tâm Ngoại ngữ - Tin học HNMT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Kiểm tra trạng thái đăng nhập khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            loadAnnouncements();
+            trackPageVisit();
+        });
+
+        function checkLoginStatus() {
+            fetch('dp/simple_check.php')
+                .then(response => response.json())
+                .then(data => {
+                    const authButtons = document.getElementById('authButtons');
+                    if (data.logged_in) {
+                        // Hiển thị thông tin người dùng đã đăng nhập
+                        authButtons.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="color: #2563eb; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-user-circle"></i> Xin chào, ${data.user_name}!
+                                </span>
+                                <a href="my-courses.html" class="btn-login" style="background: #059669; font-size: 0.85rem; padding: 6px 12px;">
+                                    <i class="fas fa-book"></i> Khóa học của tôi
+                                </a>
+                                <a href="dp/logout.php" class="btn-register" style="background: #dc2626; font-size: 0.85rem; padding: 6px 12px;">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                                <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-user-shield"></i>
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        // Hiển thị nút đăng nhập/đăng ký
+                        authButtons.innerHTML = `
+                            <a href="simple_login.html" class="btn-login">Đăng nhập</a>
+                            <a href="simple_register.html" class="btn-register">Đăng ký</a>
+                            <a href="admin-login.html" class="btn-admin" title="Quản trị viên" style="background: #374151; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; margin-left: 0.5rem; display: inline-flex; align-items: center;">
+                                <i class="fas fa-user-shield"></i>
+                            </a>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.log('Chưa đăng nhập:', error);
+                });
+        }
+
+        // Track page visit for analytics
+        function trackPageVisit() {
+            fetch('dp/simple_analytics.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    page_url: window.location.pathname
+                })
+            }).catch(error => {
+                // Ignore tracking errors
+                console.log('Analytics tracking failed:', error);
+            });
+        }
+
+        function loadAnnouncements() {
+            fetch('dp/get_content.php?type=announcement')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('announcementsContainer');
+                    
+                    if (data.success && data.content.length > 0) {
+                        displayAnnouncements(data.content);
+                    } else {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-bullhorn"></i>
+                                <h3>Chưa có thông báo nào</h3>
+                                <p>Hiện tại chưa có thông báo mới từ trung tâm. Vui lòng quay lại sau!</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading announcements:', error);
+                    const container = document.getElementById('announcementsContainer');
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Lỗi tải thông báo</h3>
+                            <p>Không thể tải thông báo. Vui lòng thử lại sau.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function displayAnnouncements(announcements) {
+            const container = document.getElementById('announcementsContainer');
+            
+            if (!announcements || announcements.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bullhorn"></i>
+                        <h3>Chưa có thông báo nào</h3>
+                        <p>Hiện tại chưa có thông báo mới từ trung tâm. Vui lòng quay lại sau!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="announcements-grid">';
+            announcements.forEach((announcement, index) => {
+                if (!announcement) return;
+                
+                const title = announcement.title || 'Thông báo';
+                const content = announcement.content || 'Không có nội dung';
+                const status = announcement.status || 'active';
+                const createdAt = announcement.created_at || new Date().toISOString();
+                
+                // Format date
+                const date = new Date(createdAt);
+                const formattedDate = date.toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                // Determine icon based on content
+                let icon = 'fas fa-bullhorn';
+                const titleLower = title.toLowerCase();
+                if (titleLower.includes('khóa học') || titleLower.includes('course')) {
+                    icon = 'fas fa-graduation-cap';
+                } else if (titleLower.includes('sự kiện') || titleLower.includes('event')) {
+                    icon = 'fas fa-calendar-alt';
+                } else if (titleLower.includes('thông báo') || titleLower.includes('notice')) {
+                    icon = 'fas fa-info-circle';
+                } else if (titleLower.includes('khuyến mãi') || titleLower.includes('promotion')) {
+                    icon = 'fas fa-gift';
+                } else if (titleLower.includes('tuyển sinh') || titleLower.includes('admission')) {
+                    icon = 'fas fa-user-plus';
+                } else if (titleLower.includes('lịch học') || titleLower.includes('schedule')) {
+                    icon = 'fas fa-clock';
+                }
+                
+                html += `
+                    <div class="announcement-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="announcement-icon">
+                            <i class="${icon}"></i>
+                        </div>
+                        <div class="announcement-content-wrapper">
+                            <div class="announcement-header">
+                                <span class="announcement-date">
+                                    <i class="fas fa-calendar"></i>
+                                    ${formattedDate}
+                                </span>
+                                <h3 class="announcement-title">${title}</h3>
+                            </div>
+                            <div class="announcement-body">
+                                <div class="announcement-content">${content}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+    </script>
+</body>
+</html>
