@@ -1,39 +1,34 @@
 <?php
-// File debug đơn giản để kiểm tra JSON output
-header('Content-Type: application/json');
+// Kiểm tra trạng thái đăng nhập đơn giản
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
-// Tắt tất cả error output
-error_reporting(0);
-ini_set('display_errors', 0);
+// Xử lý preflight request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
+session_start();
 
 try {
-    session_start();
-    
-    // Debug session info
-    $session_info = [
-        'session_id' => session_id(),
-        'session_status' => session_status(),
-        'session_data' => $_SESSION ?? [],
-        'has_user_id' => isset($_SESSION['user_id']),
-        'has_full_name' => isset($_SESSION['full_name'])
-    ];
-    
-    // Kiểm tra session đơn giản
-    if (isset($_SESSION['user_id']) && isset($_SESSION['full_name'])) {
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        // Người dùng đã đăng nhập
         echo json_encode([
             'logged_in' => true,
-            'user_name' => $_SESSION['full_name'],
-            'email' => $_SESSION['email'] ?? 'N/A',
             'user_id' => $_SESSION['user_id'],
-            'debug' => $session_info
+            'user_name' => $_SESSION['user_name'] ?? 'Người dùng',
+            'user_email' => $_SESSION['user_email'] ?? ''
         ]);
     } else {
+        // Người dùng chưa đăng nhập
         echo json_encode([
-            'logged_in' => false,
-            'debug' => $session_info
+            'logged_in' => false
         ]);
     }
 } catch (Exception $e) {
+    // Lỗi - trả về chưa đăng nhập
     echo json_encode([
         'logged_in' => false,
         'error' => $e->getMessage()

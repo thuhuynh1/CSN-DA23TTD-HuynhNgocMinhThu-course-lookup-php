@@ -8,10 +8,11 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Cấu hình kết nối cơ sở dữ liệu
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'user_auth_db');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// Thay đổi thông tin này theo MySQL Server của bạn
+define('DB_HOST', 'localhost');        // Hoặc IP của MySQL server
+define('DB_NAME', 'user_auth_db');     // Tên database
+define('DB_USER', 'root');             // Username MySQL
+define('DB_PASS', '');                 // XAMPP mặc định không có password
 
 // Cấu hình session
 define('SESSION_LIFETIME', 3600); // 1 giờ
