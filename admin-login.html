@@ -166,7 +166,13 @@
     </div>
 
     <script>
+        // Chỉ chạy script này nếu main.js chưa xử lý form
         document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            // Kiểm tra xem main.js đã xử lý chưa
+            if (window.handleAdminLogin) {
+                return; // Để main.js xử lý
+            }
+            
             e.preventDefault();
             
             const email = document.getElementById('adminEmail').value;

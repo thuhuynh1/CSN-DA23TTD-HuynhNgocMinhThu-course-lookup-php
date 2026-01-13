@@ -855,62 +855,10 @@ function initializeAdminPage() {
 function initializeAdminLogin() {
     if (getCurrentPage() !== 'admin-login') return;
     
-    const adminLoginForm = document.getElementById('adminLoginForm');
-    if (adminLoginForm) {
-        adminLoginForm.addEventListener('submit', handleAdminLogin);
-    }
+    // Không cần xử lý gì ở đây vì admin-login.html đã có script riêng
 }
 
-function handleAdminLogin(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPassword').value;
-    const errorMessage = document.getElementById('errorMessage');
-    const loginBtn = document.getElementById('loginBtn');
-    
-    // Clear previous error
-    if (errorMessage) errorMessage.style.display = 'none';
-    
-    // Disable button
-    if (loginBtn) {
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
-    }
-    
-    // Simulate login delay
-    setTimeout(() => {
-        // Check admin credentials
-        if (email === 'admin@abccenter.edu.vn' && password === 'admin123') {
-            // Create admin user object
-            const adminUser = {
-                firstName: 'Admin',
-                lastName: 'User',
-                email: email,
-                role: 'admin',
-                loginAt: new Date().toISOString()
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('currentUser', JSON.stringify(adminUser));
-            
-            // Redirect to admin panel
-            window.location.href = 'admin.html';
-        } else {
-            // Show error
-            if (errorMessage) {
-                errorMessage.textContent = 'Email hoặc mật khẩu không đúng!';
-                errorMessage.style.display = 'block';
-            }
-            
-            // Re-enable button
-            if (loginBtn) {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
-            }
-        }
-    }, 1000);
-}
+// Hàm handleAdminLogin đã được xóa vì xung đột với admin-login.html
 
 function loadAdminDashboard() {
     // Load admin dashboard data

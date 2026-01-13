@@ -62,15 +62,37 @@ try {
         exit;
     }
     
+    // Debug: Log email được nhập
+    error_log("Email nhập vào: '$email'");
+    
     // Tìm admin trong database
     $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ? AND status = 'active'");
     $stmt->execute([$email]);
     $admin = $stmt->fetch();
     
+    // Debug: Log kết quả tìm kiếm
+    error_log("Admin tìm thấy: " . ($admin ? "CÓ" : "KHÔNG"));
+    if ($admin) {
+        error_log("Admin info: " . json_encode([
+            'id' => $admin['id'],
+            'username' => $admin['username'], 
+            'email' => $admin['email'],
+            'status' => $admin['status']
+        ]));
+    }
+    
     if (!$admin) {
+        // Thêm debug: Kiểm tra tất cả admin
+        $allAdmins = $pdo->query("SELECT email, status FROM admins")->fetchAll();
+        error_log("Tất cả admin trong DB: " . json_encode($allAdmins));
+        
         echo json_encode([
             'success' => false,
-            'message' => 'Email hoặc mật khẩu không đúng'
+            'message' => 'Email hoặc mật khẩu không đúng',
+            'debug' => [
+                'email_input' => $email,
+                'all_admins' => $allAdmins
+            ]
         ]);
         exit;
     }
